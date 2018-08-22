@@ -1,0 +1,85 @@
+﻿.tblRow, .tblColumn {
+     
+       border: 1px solid black;
+    text-align: center;
+}
+#tblDiv {
+    text-align: center;margin-left:20%; margin-top:1% 
+}
+#accountDetailTable {
+    border-collapse: collapse; border-radius: 10px; border:1px solid black; width: 60%; font-family: Calibri;
+}
+
+.tblHearerRow {
+  
+      background-color: #4d4dff; color: white; height: 30px; border:1px solid black;
+}
+
+.rowColor {
+    background-color: #cceeff;
+}
+
+#accSelect {
+    width: 150px;
+}
+
+.containerDiv {
+    height: 200px;
+    width: 48%;
+    border: 1px solid #1291EE;
+    border-radius: 25px;
+    font-family: Calibri;
+    background-color: #E8F3FB;
+    margin-left: 20%;
+    margin-top: 1%;
+}
+
+.heading {
+    margin-top: 2%;
+    margin-left: 20%;
+    text-align: left;
+    font-family: Calibri;
+    font-size: 16px;
+    color: #0000FF;
+    font-style: italic;
+}
+
+.divLeft {
+    float: left;
+    margin-left: 20%;
+    margin-top: 3%;
+    margin-bottom:3%;
+}
+
+.divRight {
+    color: black;
+    margin-top: 3%;
+    margin-left: 45%;
+}
+
+#headingSpan {
+    margin-top: 1%;
+    margin-left: 20%;
+    text-align: left;
+    font-family: Calibri;
+    font-size: 16px;
+    color: #0000FF;
+    font-style: italic;
+}
+
+#firstDiv {
+    margin-top: 1%;
+    border-radius: 10px;
+    margin-left: 20%;
+    font-family: Calibri;
+    background-color: #E8F3FB;
+    border: 1px solid #1291EE;
+    height: 75px;
+    width: 48%;
+}
+
+#secondDiv{
+   text-align:left; 
+   margin-top: 2%;
+    margin-left:5%;
+}
