@@ -19,6 +19,6 @@ namespace DogsAPI2.Services.DogListService
 
         bool Update(Dog item);
 
-        bool Delete(string name);
+        bool Delete(int id);
     }
 }

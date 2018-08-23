@@ -11,6 +11,7 @@ namespace DogsAPI2.Services.Models
         public Dog()
         {
         }
+        public int DogID { get; set; }
         public string DogName { get; set; }
         public string[] Dogtype { get; set; }
     }

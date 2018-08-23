@@ -22,6 +22,7 @@ namespace DogsAPI2.Services.DogListService
             try
             {
                 var dogs = GetAll().ToList();
+                item.DogID= dogs.Max(a => a.DogID) + 1;
                 dogs.Add(item);
                 WriteObjectToFile(dogs);
                 return true;
@@ -32,12 +33,12 @@ namespace DogsAPI2.Services.DogListService
             }
         }
 
-        public bool Delete(string name)
+        public bool Delete(int id)
         {
             try
             {
                 var dogs = GetAll().ToList();
-                dogs.Remove(dogs.Where(a => a.DogName == name).FirstOrDefault());
+                dogs.Remove(dogs.Where(a => a.DogID == id).FirstOrDefault());
                 WriteObjectToFile(dogs);
                 return true;
             }catch(Exception ex)
@@ -78,11 +79,13 @@ namespace DogsAPI2.Services.DogListService
             }
 
             IList<Dog> dogList = new List<Dog>();
-
+            int tempDogID = 0;
             foreach(var key in dictDogs)
             {
                 Dog dog = DictionaryToObject<Dog>(key);
+                dog.DogID = tempDogID; //This is temp as it will only be in scope for the users transaction
                 dogList.Add(dog);
+                tempDogID += 1;
             }
             return dogList.AsEnumerable();
         }
@@ -103,8 +106,9 @@ namespace DogsAPI2.Services.DogListService
             try
             {
                 var dogs = GetAll();
-                Dog updatingDog = dogs.Where(a => a.DogName == item.DogName).FirstOrDefault();
-                updatingDog = item;
+                Dog updatingDog = dogs.Where(a => a.DogID == item.DogID).FirstOrDefault();
+                updatingDog.DogName = item.DogName;
+                updatingDog.Dogtype = item.Dogtype;
                 WriteObjectToFile(dogs.ToList());
                 return true;
             }catch(Exception ex)
@@ -135,7 +139,7 @@ namespace DogsAPI2.Services.DogListService
                         object newA = Convert.ChangeType(item.Key, tPropertyType);
                         t.GetType().GetProperty(property.Name).SetValue(t, newA, null);
                     }
-                    else
+                    else if (tPropertyType == typeof(string[]))
                     {
                         object newA = Convert.ChangeType(item.Value, tPropertyType);
                         t.GetType().GetProperty(property.Name).SetValue(t, newA, null);

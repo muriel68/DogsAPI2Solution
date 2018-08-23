@@ -3,6 +3,7 @@ using DogsAPI2.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -24,20 +25,111 @@ namespace DogsAPI2.Areas.DogsWebList.Controllers
         // GET: DogWebList/DogList
         public ActionResult Index()
         {
-            IEnumerable<Dog> dogList = _dogService.GetAll();
-
-            Dog d = new Dog { DogName = "Big Shaggy Test Dog", Dogtype = new string[]{ "Big Test Type Of Dog", "And another" } };
-            _dogService.Add(d);
-
-            IEnumerable<Dog> dogList1 = _dogService.GetAll();
-
-          //  _dogService.Delete(d.DogName);
-
-            IEnumerable<Dog> dogList2 = _dogService.GetAll();
-
-            string[] dogtypes = _dogService.GetAllDogtypes();
-
             return View();
+        }
+
+
+    public ActionResult DogDatasource(string sord, int page, int rows, string searchString)
+        {
+            IEnumerable<Dog> Results = _dogService.GetAll();
+
+            int pageIndex = Convert.ToInt32(page) - 1;
+            int pageSize = rows;
+
+            //#4 Get Total Row Count  
+            int totalRecords = Results.Count();
+            var totalPages = (int)Math.Ceiling((float)totalRecords / (float)rows);
+
+            //#5 Setting Sorting  
+            if (sord != null)
+            {
+                if (sord.ToUpper() == "DESC")
+                {
+                    Results = Results.OrderByDescending(s => s.DogName);
+                    Results = Results.Skip(pageIndex * pageSize).Take(pageSize);
+                }
+                else
+                {
+                    Results = Results.OrderBy(s => s.DogName);
+                    Results = Results.Skip(pageIndex * pageSize).Take(pageSize);
+                }
+            }
+            //#6 Setting Search  
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                Results = Results.Where(m => m.DogName.Contains(searchString) || m.Dogtype.Contains(searchString));
+            }
+            //#7 Sending Json Object to View.  
+            var jsonData = new
+            {
+                total = totalPages,
+                page,
+                records = totalRecords,
+                rows = Results
+            };
+
+            return Json(jsonData, JsonRequestBehavior.AllowGet); 
+        }
+
+        [HttpPost]
+        public JsonResult CreateDog( Dog dog)
+        {
+            StringBuilder msg = new StringBuilder();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+
+                    _dogService.Add(dog);
+                    return Json("Saved Successfully", JsonRequestBehavior.AllowGet);
+
+                }
+                else
+                {
+                    var errorList = (from item in ModelState
+                                     where item.Value.Errors.Any()
+                                     select item.Value.Errors[0].ErrorMessage).ToList();
+
+                    return Json(errorList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                var errormessage = "Error occured: " + ex.Message;
+                return Json(errormessage, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        public string EditDog(Dog dog)
+        {
+            string msg;
+            try
+            {
+                if (ModelState.IsValid)
+                {
+
+                    _dogService.Update(dog);
+                        msg = "Saved Successfully";
+                }
+                else
+                {
+                    msg = "Some Validation ";
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = "Error occured:" + ex.Message;
+            }
+            return msg;
+        }
+
+        public string DeleteDog(int Id)
+        {
+
+            _dogService.Delete(Id);
+                return "Deleted successfully";
+
         }
     }
 }
