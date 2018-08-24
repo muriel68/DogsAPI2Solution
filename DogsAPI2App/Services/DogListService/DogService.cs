@@ -102,10 +102,12 @@ namespace DogsAPI2.Services.DogListService
         {
             try
             {
-                var dogs = GetAll();
+                var dogs = GetAll().ToList();
                 Dog updatingDog = dogs.Where(a => a.DogNameForUpdate == item.DogNameForUpdate).FirstOrDefault();
                 updatingDog.DogName = item.DogName;
-                updatingDog.Dogtype = item.Dogtype;
+                updatingDog.Dogtype[0] = string.Join(",", item.Dogtype);
+                updatingDog.Dogtype = updatingDog.Dogtype.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
                 WriteObjectToFile(dogs.ToList());
                 return true;
             }catch(Exception ex)

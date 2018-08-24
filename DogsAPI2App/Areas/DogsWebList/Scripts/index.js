@@ -49,7 +49,7 @@
             {
                 edit: false,
                 add: true,
-                del: true,
+                del: false,
                 search: true,
                 refresh: true,
                 closeAfterSearch: true
@@ -106,19 +106,20 @@
 
         function displayButtons(cellvalue, options, rowObject) {
           //  debugger;
-            var edit = "<a href='#' class='editDog' data-id='" + rowObject.DogName + "' >Edit</a> | ",
-                 Delete = "<a href='#' class='deleteDog' data-id='" + rowObject.DogName + "'>Delete</a>";
-            return edit + Delete;
+            var Delete = "<a href='#' class='deleteDog' data-id='" + rowObject.DogName + "'>Delete</a>";
+            return Delete;
         }
 
         function displayDogTypes(cellvalue, options, rowObject) {
-         //   debugger;
+            //   debugger;
+
+            var dogname = rowObject.DogName;
 
             var html = "";
             if (rowObject.Dogtype.length > 0) {
                 var dogtypearray = rowObject.Dogtype[0].split(',');
                 $.each(dogtypearray, function (index, value) {
-                    html += "<div class='roundContainer'>" + value + "&nbsp<a href='#' class='deleteDog' data-id='" + value + "'><b>X</b></a></div>&nbsp&nbsp";
+                    html += "<div class='roundContainer'>" + value + "&nbsp<a href='#' class='deleteDogType' data-dogtypeid='" + value + "' data-id='" + dogname + "'><b>X</b></a></div>&nbsp&nbsp";
                 });
                 return html;
             }
@@ -140,10 +141,32 @@
     });
 
     function DoubleClickRow(data) {
-        debugger;
+     //   debugger;
         $("#editDialog").dialog("open", "modal", true);
         $("#tbDogName").val(data.DogName);
     }
 
+    $('body').on('click', 'a.deleteDog', function (event) {
+        var dogname = this.dataset.id;
+        $.post('DogList/DeleteDog', { Dogname: dogname}, 
+            function(returnedData){
+                $('#jqDogGrid').trigger('reloadGrid');
+                console.log(returnedData);
+            }).fail(function(){
+                console.log("error");
+            });
+    });
+
+    $('body').on('click', 'a.deleteDogType', function (event) {
+        var dogname = this.dataset.id;
+        var dogtype = this.dataset.dogtypeid;
+        $.post('DogList/DeleteDogType', { Dogname: dogname, Dogtype: dogtype },
+            function (returnedData) {
+                $('#jqDogGrid').trigger('reloadGrid');
+                console.log(returnedData);
+            }).fail(function () {
+                console.log("error");
+            });
+    });
 });
 
