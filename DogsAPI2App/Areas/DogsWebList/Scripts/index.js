@@ -5,24 +5,28 @@
         //  debugger;
         $("#jqDogGrid").jqGrid
         ({
+            ondblClickRow: function (rowid,iRow,iCol,e) {
+                var data = $('#jqDogGrid').getRowData(rowid);
+
+                DoubleClickRow(data);
+            },
             url: "/DogList/DogDatasource",
             datatype: 'json',
             mtype: 'Get',
             //table header name  
-            colNames: ['DogID', 'DogName', 'DogType'],
+            colNames: ['DogNameForUpdate', 'DogName', 'DogType', 'Actions'],
             //colModel takes the data from controller and binds to grid  
             colModel: [
             {
-                name: "DogID",
-                key: true,
-                hidden: true
+                name: "DogNameForUpdate", hidden: true, editable: true
             },
             {
                 name: "DogName", editable: true, editrules: { required: true }
             },
             {
-                name: "DogType", editable: true
+                key: false, name: "DogType", index: 'DogType', editable: true, formatter: displayDogTypes, title: false
             },
+                { key: false, name: 'Actions', index: 'Actions', editable: false, formatter: displayButtons, title: false }
             ],
             height: '100%',
             rowNum: 10,
@@ -43,7 +47,7 @@
             autowidth: true,
         }).navGrid('#pager',
             {
-                edit: true,
+                edit: false,
                 add: true,
                 del: true,
                 search: true,
@@ -59,7 +63,7 @@
                 recreateForm: true,
                 afterComplete: function (response) {
                     if (response.responseText) {
-                        alert(response.responseText);
+                      //  alert(response.responseText);
                     }
                 }
             },
@@ -72,7 +76,7 @@
                 afterComplete: function (response) {
                     if (response.responseJSON) {
                         if (response.responseJSON == "Saved Successfully") {
-                            alert("Saved Successfully");
+                          //  alert("Saved Successfully");
                         }
                         else {
                             var message = "";
@@ -94,11 +98,52 @@
                 msg: "Are you sure you want to delete this dog?",
                 afterComplete: function (response) {
                     if (response.responseText) {
-                        alert(response.responseText);
+                      //  alert(response.responseText);
                     }
                 }
             }
         );
+
+        function displayButtons(cellvalue, options, rowObject) {
+          //  debugger;
+            var edit = "<a href='#' class='editDog' data-id='" + rowObject.DogName + "' >Edit</a> | ",
+                 Delete = "<a href='#' class='deleteDog' data-id='" + rowObject.DogName + "'>Delete</a>";
+            return edit + Delete;
+        }
+
+        function displayDogTypes(cellvalue, options, rowObject) {
+         //   debugger;
+
+            var html = "";
+            if (rowObject.Dogtype.length > 0) {
+                var dogtypearray = rowObject.Dogtype[0].split(',');
+                $.each(dogtypearray, function (index, value) {
+                    html += "<div class='roundContainer'>" + value + "&nbsp<a href='#' class='deleteDog' data-id='" + value + "'><b>X</b></a></div>&nbsp&nbsp";
+                });
+                return html;
+            }
+            return "";
+        }
+
+
+        $('#editDialog').dialog({
+            zIndex:100,
+            autoOpen: false,
+            height: 200,
+            width: 500,
+            modal: true,
+            resizable: true,
+            open: function (event, ui) {
+
+            }
+        });
     });
+
+    function DoubleClickRow(data) {
+        debugger;
+        $("#editDialog").dialog("open", "modal", true);
+        $("#tbDogName").val(data.DogName);
+    }
+
 });
 

@@ -22,7 +22,6 @@ namespace DogsAPI2.Services.DogListService
             try
             {
                 var dogs = GetAll().ToList();
-                item.DogID= dogs.Max(a => a.DogID) + 1;
                 dogs.Add(item);
                 WriteObjectToFile(dogs);
                 return true;
@@ -33,12 +32,12 @@ namespace DogsAPI2.Services.DogListService
             }
         }
 
-        public bool Delete(int id)
+        public bool Delete(string id)
         {
             try
             {
                 var dogs = GetAll().ToList();
-                dogs.Remove(dogs.Where(a => a.DogID == id).FirstOrDefault());
+                dogs.Remove(dogs.Where(a => a.DogNameForUpdate == id).FirstOrDefault());
                 WriteObjectToFile(dogs);
                 return true;
             }catch(Exception ex)
@@ -79,13 +78,11 @@ namespace DogsAPI2.Services.DogListService
             }
 
             IList<Dog> dogList = new List<Dog>();
-            int tempDogID = 0;
             foreach(var key in dictDogs)
             {
                 Dog dog = DictionaryToObject<Dog>(key);
-                dog.DogID = tempDogID; //This is temp as it will only be in scope for the users transaction
+                dog.DogNameForUpdate = key.Key; //This is temp as it will only be in scope for the users transaction
                 dogList.Add(dog);
-                tempDogID += 1;
             }
             return dogList.AsEnumerable();
         }
@@ -106,7 +103,7 @@ namespace DogsAPI2.Services.DogListService
             try
             {
                 var dogs = GetAll();
-                Dog updatingDog = dogs.Where(a => a.DogID == item.DogID).FirstOrDefault();
+                Dog updatingDog = dogs.Where(a => a.DogNameForUpdate == item.DogNameForUpdate).FirstOrDefault();
                 updatingDog.DogName = item.DogName;
                 updatingDog.Dogtype = item.Dogtype;
                 WriteObjectToFile(dogs.ToList());

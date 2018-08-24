@@ -124,7 +124,7 @@ namespace DogsAPI2.Areas.DogsWebList.Controllers
             return msg;
         }
 
-        public string DeleteDog(int Id)
+        public string DeleteDog(string Id)
         {
 
             _dogService.Delete(Id);

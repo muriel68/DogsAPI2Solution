@@ -5,9 +5,25 @@
 }
 <script src="~/Areas/DogsWebList/Scripts/index.js"></script>
 
+<style type="text/css">
+    .roundContainer {
+    border-radius: 5px;
+    border: 1px solid;
+    width: auto;
+    padding-left:inherit;
+    float: left;
+    padding: inherit;
+    }
+</style>
 
 <h2>Dogs Web List</h2>
 
 <table id="jqDogGrid"></table>
 <div id="pager"></div>
 
+
+<div id="editDialog" title="Edit Dog">
+
+    Name: <input type="text" id="tbDogName" class="form-control" />
+
+</div>
