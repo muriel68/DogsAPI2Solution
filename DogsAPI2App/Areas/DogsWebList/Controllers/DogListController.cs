@@ -54,7 +54,7 @@ namespace DogsAPI2.Areas.DogsWebList.Controllers
             //#6 Setting Search
             if (!string.IsNullOrEmpty(searchString))
             {
-                Results = Results.Where(m => m.DogName.Contains(searchString) || m.Dogtype.Contains(searchString));
+                Results = Results.Where(m => searchString.Contains(m.DogName) || m.Dogtype.Contains(searchString));
             }
             //#7 Sending Json Object to View.
             var jsonData = new
@@ -126,7 +126,23 @@ namespace DogsAPI2.Areas.DogsWebList.Controllers
             dog.Dogtype = dogtypestring.Split(',').Select(a => a).ToArray();
             dog.Dogtype = dog.Dogtype.Where(x => !string.IsNullOrEmpty(x)).ToArray();
             _dogService.Update(dog);
-            return "Dog type updated";
+            return "Dog type deleted";
+        }
+
+        public string AddDogType(string Dogname, string Dogtype)
+        {
+            Dog dog = _dogService.Get(Dogname);
+            string dogtypestring = "";
+            if(dog.Dogtype.Length > 0)
+            { dogtypestring = dog.Dogtype[0].ToString();
+                dogtypestring = dogtypestring += "," + Dogtype;
+            }else{
+                dogtypestring = Dogtype;
+            }
+            dog.Dogtype = dogtypestring.Split(',').Select(a => a).ToArray();
+            dog.Dogtype = dog.Dogtype.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            _dogService.Update(dog);
+            return "Dog type added";
         }
 
         public string DeleteDog(string Dogname)

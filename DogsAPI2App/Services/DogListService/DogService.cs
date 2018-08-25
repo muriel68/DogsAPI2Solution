@@ -68,9 +68,7 @@ namespace DogsAPI2.Services.DogListService
         public IEnumerable<Dog> GetAll()
         {
             Dictionary<string, string[]> dictDogs;
-
             string relativePath = AppDomain.CurrentDomain.BaseDirectory + "Models/";
-
             using (StreamReader r = new StreamReader(relativePath + "dogs.json"))
             {
                 string json = r.ReadToEnd();
@@ -105,9 +103,25 @@ namespace DogsAPI2.Services.DogListService
                 var dogs = GetAll().ToList();
                 Dog updatingDog = dogs.Where(a => a.DogNameForUpdate == item.DogNameForUpdate).FirstOrDefault();
                 updatingDog.DogName = item.DogName;
-                updatingDog.Dogtype[0] = string.Join(",", item.Dogtype);
+                if (updatingDog.Dogtype.Length > 0)
+                {
+                    updatingDog.Dogtype[0] = string.Join(",", item.Dogtype);
+                }
+                else
+                {
+                    Dog newDog = new Dog
+                    {
+                        DogNameForUpdate = item.DogNameForUpdate,
+                        DogName = item.DogName,
+                        Dogtype = new string[] { item.Dogtype[0] }
+                    };
+                    dogs.Remove(updatingDog);
+                    dogs.Add(newDog);
+                  //  newDog.Dogtype = updatingDog.Dogtype.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+                    WriteObjectToFile(dogs.ToList());
+                    return true;
+                }
                 updatingDog.Dogtype = updatingDog.Dogtype.Where(x => !string.IsNullOrEmpty(x)).ToArray();
-
                 WriteObjectToFile(dogs.ToList());
                 return true;
             }catch(Exception ex)
@@ -170,6 +184,10 @@ namespace DogsAPI2.Services.DogListService
             }
         }
 
+        /// <summary>
+        /// Once done manipulating the object map, pass it in here to persist
+        /// </summary>
+        /// <param name="dogs"></param>
         private void WriteObjectToFile(List<Dog> dogs)
         {
             try { 

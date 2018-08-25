@@ -121,9 +121,9 @@
                 $.each(dogtypearray, function (index, value) {
                     html += "<div class='roundContainer'>" + value + "&nbsp<a href='#' class='deleteDogType' data-dogtypeid='" + value + "' data-id='" + dogname + "'><b>X</b></a></div>&nbsp&nbsp";
                 });
-                return html;
+              //  return html;
             }
-            return "";
+            return html + "<a href='#' class='addDogType' data-id='" + dogname + "'>add</a>";
         }
 
 
@@ -138,6 +138,26 @@
 
             }
         });
+
+        $('#addDogTypeDialog').dialog({
+            zIndex: 100,
+            autoOpen: false,
+            height: 200,
+            width: 500,
+            modal: true,
+            resizable: true,
+            buttons: {
+                "Add": function (eve) {
+
+                    SubmitNewDogType(eve);
+                    $("div#addDogTypeDialog").dialog("close");
+                },
+                "Close": function () {
+                    $("div#addDogTypeDialog").dialog("close");
+                }
+            }
+        });
+
     });
 
     function DoubleClickRow(data) {
@@ -168,5 +188,28 @@
                 console.log("error");
             });
     });
+
+    $('body').on('click', 'a.addDogType', function (event) {
+        var dogname = this.dataset.id;
+
+        $("#hdDogType").val(dogname);
+           $("#addDogTypeDialog").dialog("open", "modal", true);
+    });
+
+    function SubmitNewDogType(eve){
+ 
+        var dogtype = $("#tbDogTypeName").val();
+        var dogname = $("#hdDogType").val();
+        
+        $.post('DogList/AddDogType', { Dogname: dogname, Dogtype: dogtype },
+            function (returnedData) {
+           //     debugger;
+                $('#jqDogGrid').trigger('reloadGrid');
+                console.log(returnedData);
+            }).fail(function () {
+                console.log("error");
+            });
+    }
+
 });
 
