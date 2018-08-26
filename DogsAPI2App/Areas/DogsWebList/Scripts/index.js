@@ -48,13 +48,14 @@
         }).navGrid('#pager',
             {
                 edit: false,
-                add: true,
+                add: false,
                 del: false,
                 search: true,
                 refresh: true,
                 closeAfterSearch: true
             },
             {
+                //All the options are implemented so we can revert back to jqGrid built-in CRUD if need be
                 // edit option  
                 zIndex: 100,
                 url: '/DogList/EditDog',
@@ -105,37 +106,68 @@
         );
 
         function displayButtons(cellvalue, options, rowObject) {
-          //  debugger;
             var Delete = "<a href='#' class='deleteDog' data-id='" + rowObject.DogName + "'>Delete</a>";
             return Delete;
         }
 
         function displayDogTypes(cellvalue, options, rowObject) {
-            //   debugger;
 
             var dogname = rowObject.DogName;
-
             var html = "";
             if (rowObject.Dogtype.length > 0) {
                 var dogtypearray = rowObject.Dogtype[0].split(',');
                 $.each(dogtypearray, function (index, value) {
                     html += "<div class='roundContainer'>" + value + "&nbsp<a href='#' class='deleteDogType' data-dogtypeid='" + value + "' data-id='" + dogname + "'><b>X</b></a></div>&nbsp&nbsp";
                 });
-              //  return html;
             }
-            return html + "<a href='#' class='addDogType' data-id='" + dogname + "'>add</a>";
+            return html + "<a href='#' class='addDogType' data-id='" + dogname + "'>add type</a>";
         }
 
+        //removing built-in title and replcing with add anchor
+        $(".ui-jqgrid-title").html("<span class='fa fa-plus'><a href='#' class='addDog' style='color:white;'>Add Dog</a></span>");
 
-        $('#editDialog').dialog({
-            zIndex:100,
+        //Dialogs
+        $('#addDialog').dialog({
+            zIndex: 100,
             autoOpen: false,
-            height: 200,
+            height: 300,
             width: 500,
             modal: true,
             resizable: true,
-            open: function (event, ui) {
+            buttons: {
+                "Submit": function (eve) {
 
+                    SubmitNewDog(eve);
+                    ClearInputs();
+                    $("div#addDialog").dialog("close");
+                },
+                "Close": function () {
+                    $("div#addDialog").dialog("close");
+                    ClearInputs();
+                }
+            }
+        });
+
+
+ 
+        $('#editDialog').dialog({
+            zIndex:100,
+            autoOpen: false,
+            height: 300,
+            width: 500,
+            modal: true,
+            resizable: true,
+            buttons: {
+                "Submit": function (eve) {
+
+                    SubmitEditDog(eve);
+                    ClearInputs();
+                    $("div#editDialog").dialog("close");
+                },
+                "Close": function () {
+                    $("div#editDialog").dialog("close");
+                    ClearInputs();
+                }
             }
         });
 
@@ -150,6 +182,7 @@
                 "Add": function (eve) {
 
                     SubmitNewDogType(eve);
+                    ClearInputs();
                     $("div#addDogTypeDialog").dialog("close");
                 },
                 "Close": function () {
@@ -157,24 +190,45 @@
                 }
             }
         });
-
     });
 
+    //End Dialogs
+
     function DoubleClickRow(data) {
-     //   debugger;
         $("#editDialog").dialog("open", "modal", true);
-        $("#tbDogName").val(data.DogName);
+        ClearInputs();
+        $.post('DogList/GetDog', { Dogname: data.DogName },
+           function (returnedDog) {
+               $("#hdDogNameForUpdate").val(returnedDog.DogName);
+               $("#tbDogName").val(returnedDog.DogName);
+               $("#taDogType").val(returnedDog.Dogtype.join(', '));
+
+           }).fail(function () {
+               console.log("error");
+           });
     }
 
     $('body').on('click', 'a.deleteDog', function (event) {
         var dogname = this.dataset.id;
-        $.post('DogList/DeleteDog', { Dogname: dogname}, 
-            function(returnedData){
-                $('#jqDogGrid').trigger('reloadGrid');
-                console.log(returnedData);
-            }).fail(function(){
-                console.log("error");
-            });
+
+        var result = window.confirm('Are you sure?, This cannot be undone');
+        if (result == false) {
+            e.preventDefault();
+        } else {
+            $.post('DogList/DeleteDog', { Dogname: dogname },
+                function (returnedData) {
+                    $('#jqDogGrid').trigger('reloadGrid');
+                    console.log(returnedData);
+                }).fail(function () {
+                    console.log("error");
+                });
+        }
+    });
+
+    $('body').on('click', 'a.addDog', function (event) {
+
+        $("#addDialog").dialog("open", "modal", true);
+
     });
 
     $('body').on('click', 'a.deleteDogType', function (event) {
@@ -189,26 +243,112 @@
             });
     });
 
-    $('body').on('click', 'a.addDogType', function (event) {
-        var dogname = this.dataset.id;
+        $('body').on('click', 'a.addDogType', function (event) {
+            var dogname = this.dataset.id;
 
-        $("#hdDogType").val(dogname);
-           $("#addDogTypeDialog").dialog("open", "modal", true);
-    });
+            $("#hdDogType").val(dogname);
+               $("#addDogTypeDialog").dialog("open", "modal", true);
+        });
 
-    function SubmitNewDogType(eve){
+        function SubmitNewDog()
+        {
+          var dogtype = $("#taDogTypeAdd").val();
+          var dogname = $("#tbDogNameAdd").val();
+
+          dogtype = StripDuplicateDogTypes(dogtype);
+
+         $.post('DogList/CreateDog', { Dogname: dogname, Dogtype: dogtype, DogNameForUpdate: dogname },
+         function (returnedData) {
+             $('#jqDogGrid').trigger('reloadGrid');
+             console.log(returnedData);
+         }).fail(function () {
+             console.log("error");
+         });
+        }
+
+        function SubmitEditDog(eve){
  
-        var dogtype = $("#tbDogTypeName").val();
-        var dogname = $("#hdDogType").val();
-        
-        $.post('DogList/AddDogType', { Dogname: dogname, Dogtype: dogtype },
+        var dogtype = $("#taDogType").val();
+        var dogname = $("#tbDogName").val();
+        var dognameforupdate = $("#hdDogNameForUpdate").val();
+        dogtype = StripDuplicateDogTypes(dogtype);
+
+            $.post('DogList/EditDog', { DogName: dogname, Dogtype: dogtype, DogNameForUpdate: dognameforupdate },
             function (returnedData) {
-           //     debugger;
                 $('#jqDogGrid').trigger('reloadGrid');
                 console.log(returnedData);
             }).fail(function () {
                 console.log("error");
             });
+    }
+
+    function SubmitNewDogType(eve){
+ 
+        var dogtype = $("#tbDogTypeName").val();
+        var dogname = $("#hdDogType").val();
+        var updatedDogtypes;
+
+        //Getting dog so we can check for duplicate dogtypes
+        $.post('DogList/GetDog', { Dogname: dogname },
+       function (returnedDog) {
+           if(CheckForDuplicatesInArray(returnedDog.Dogtype, dogtype))
+           {
+               //Alert the user
+               alert(dogtype + " is already a type for '" + dogname + "'");
+           } else {
+               $.post('DogList/AddDogType', { Dogname: dogname, Dogtype: dogtype },
+                function (returnedData) {
+                    $('#jqDogGrid').trigger('reloadGrid');
+                    console.log(returnedData);
+                }).fail(function () {
+                    console.log("error");
+                });
+           }
+       }).fail(function () {
+           console.log("error");
+       });
+
+    }
+
+    function CheckForDuplicatesInArray(dogtype, dogtypename)
+    {
+        if (jQuery.inArray(dogtypename, dogtype) != '-1') {
+            return true;
+        }
+        return false;
+    }
+
+    function StripDuplicateDogTypes(dogtypes) {
+        debugger;
+        var items = dogtypes.split(",");
+        var arrlen = items.length - 1;
+        var i = 0;
+        var outValue = "";
+        var prevItem;
+        while (i <= arrlen) {
+            if (outValue.length > 0) {
+                if (prevItem != items[i].trim()) {
+                    var str = items[i].trim();
+                    outValue = outValue.replace(prevItem + ",", "");
+                    outValue += ", " + str;
+                }
+            }
+            else {
+                outValue = items[i].trim();
+            }
+            prevItem = items[i].trim();
+            i++;
+        }
+        return outValue;
+    }
+
+    function ClearInputs()
+    {
+        $("#tbDogTypeName").val("");
+        $("#hdDogType").val("");
+        $("#tbDogTypeName").val("");
+        $("#taDogTypeAdd").val("");
+        $("#tbDogNameAdd").val("");
     }
 
 });

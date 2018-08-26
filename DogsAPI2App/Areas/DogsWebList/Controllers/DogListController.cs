@@ -26,8 +26,17 @@ namespace DogsAPI2.Areas.DogsWebList.Controllers
             return View();
         }
 
+        /// <summary>
+        /// jqGrid datasource for dogs
+        /// </summary>
+        /// <param name="sord"></param>
+        /// <param name="page"></param>
+        /// <param name="rows"></param>
+        /// <param name="searchString"></param>
+        /// <returns></returns>
         public ActionResult DogDatasource(string sord, int page, int rows, string searchString)
         {
+            try { 
             IEnumerable<Dog> Results = _dogService.GetAll();
 
             int pageIndex = Convert.ToInt32(page) - 1;
@@ -66,12 +75,32 @@ namespace DogsAPI2.Areas.DogsWebList.Controllers
             };
 
             return Json(jsonData, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+                return Json("Couldn't get list", JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult GetDog(string Dogname)
+        {
+            try { 
+            Dog Dog = _dogService.Get(Dogname);
+            return Json(Dog, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+                return Json("Couldn't get dog", JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpPost]
         public JsonResult CreateDog(Dog dog)
         {
-            dog.Dogtype = dog.Dogtype.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            dog.Dogtype = dog.Dogtype.Where(x => !string.IsNullOrEmpty(x.ToLower())).ToArray();
             StringBuilder msg = new StringBuilder();
             try
             {
@@ -131,24 +160,41 @@ namespace DogsAPI2.Areas.DogsWebList.Controllers
 
         public string AddDogType(string Dogname, string Dogtype)
         {
-            Dog dog = _dogService.Get(Dogname);
-            string dogtypestring = "";
-            if(dog.Dogtype.Length > 0)
-            { dogtypestring = dog.Dogtype[0].ToString();
-                dogtypestring = dogtypestring += "," + Dogtype;
-            }else{
-                dogtypestring = Dogtype;
+            try
+            {
+                Dog dog = _dogService.Get(Dogname);
+                string dogtypestring = "";
+                if (dog.Dogtype.Length > 0)
+                {
+                    dogtypestring = dog.Dogtype[0].ToString();
+                    dogtypestring = dogtypestring += "," + Dogtype;
+                }
+                else
+                {
+                    dogtypestring = Dogtype;
+                }
+                dog.Dogtype = dogtypestring.Split(',').Select(a => a).ToArray();
+                dog.Dogtype = dog.Dogtype.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+                _dogService.Update(dog);
+                return "Dog type added";
+            }catch(Exception ex)
+            {
+                log.Error(ex);
+                return "Dog type not added";
             }
-            dog.Dogtype = dogtypestring.Split(',').Select(a => a).ToArray();
-            dog.Dogtype = dog.Dogtype.Where(x => !string.IsNullOrEmpty(x)).ToArray();
-            _dogService.Update(dog);
-            return "Dog type added";
         }
 
         public string DeleteDog(string Dogname)
         {
+            try { 
             _dogService.Delete(Dogname);
             return "Deleted successfully";
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+                return "Dog not deleted";
+            }
         }
     }
 }
