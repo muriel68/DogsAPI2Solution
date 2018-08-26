@@ -14,9 +14,12 @@
 
 <div id="addDialog" title="New Dog">
 
-    Name: <input type="text" id="tbDogNameAdd" class="form-control" />
+    Name: 
+    <input type="text" id="tbDogNameAdd" class="form-control" required />
     <br />
-    Type: <i style="font-size:small">(place a ',' inbetween. Duplicates will be automaticakky removed)</i> <textarea type="text" id="taDogTypeAdd" rows="2" cols="30" class="form-control" title="place a ',' after each"></textarea>
+    Type: 
+    <textarea type="text" id="taDogTypeAdd" rows="2" cols="30" class="form-control" title="place a ',' after each"></textarea>
+    <i style="font-size:small">(place a ',' inbetween. Duplicates will be automaticakky removed)</i> 
 
 
 </div>
@@ -24,9 +27,11 @@
 <div id="editDialog" title="Edit Dog">
 
     <input type="hidden" id="hdDogNameForUpdate" />
-    Name: <input type="text" id="tbDogName" class="form-control" />
+    Name: <input type="text" id="tbDogName" class="form-control" required />
     <br />
-    Type: <i style="font-size:small">(place a ',' inbetween. Duplicates will be automaticakky removed)</i> <textarea type="text" id="taDogType" rows="2" cols="30" class="form-control" title="place a ',' after each" ></textarea>
+    Type:
+    <textarea type="text" id="taDogType" rows="2" cols="30" class="form-control" title="place a ',' after each" ></textarea>
+    <i style="font-size:small">(place a ',' inbetween. Duplicates will be automaticakky removed)</i> 
 
 
 </div>
@@ -34,7 +39,6 @@
 <div id="addDogTypeDialog" title="Add Dog Type">
 
     Name: <input type="text" id="tbDogTypeName" class="form-control" />
-
     <input type="hidden" id="hdDogType" />
 
 </div>

@@ -130,7 +130,7 @@
         $('#addDialog').dialog({
             zIndex: 100,
             autoOpen: false,
-            height: 300,
+            height: 320,
             width: 500,
             modal: true,
             resizable: true,
@@ -174,7 +174,7 @@
         $('#addDogTypeDialog').dialog({
             zIndex: 100,
             autoOpen: false,
-            height: 200,
+            height: 240,
             width: 500,
             modal: true,
             resizable: true,
@@ -197,7 +197,7 @@
     function DoubleClickRow(data) {
         $("#editDialog").dialog("open", "modal", true);
         ClearInputs();
-        $.post('DogList/GetDog', { Dogname: data.DogName },
+        $.post('/DogList/GetDog', { Dogname: data.DogName },
            function (returnedDog) {
                $("#hdDogNameForUpdate").val(returnedDog.DogName);
                $("#tbDogName").val(returnedDog.DogName);
@@ -215,7 +215,7 @@
         if (result == false) {
             e.preventDefault();
         } else {
-            $.post('DogList/DeleteDog', { Dogname: dogname },
+            $.post('/DogList/DeleteDog', { Dogname: dogname },
                 function (returnedData) {
                     $('#jqDogGrid').trigger('reloadGrid');
                     console.log(returnedData);
@@ -234,7 +234,7 @@
     $('body').on('click', 'a.deleteDogType', function (event) {
         var dogname = this.dataset.id;
         var dogtype = this.dataset.dogtypeid;
-        $.post('DogList/DeleteDogType', { Dogname: dogname, Dogtype: dogtype },
+        $.post('/DogList/DeleteDogType', { Dogname: dogname, Dogtype: dogtype },
             function (returnedData) {
                 $('#jqDogGrid').trigger('reloadGrid');
                 console.log(returnedData);
@@ -256,8 +256,9 @@
           var dogname = $("#tbDogNameAdd").val();
 
           dogtype = StripDuplicateDogTypes(dogtype);
+          debugger;
 
-         $.post('DogList/CreateDog', { Dogname: dogname, Dogtype: dogtype, DogNameForUpdate: dogname },
+         $.post('/DogList/CreateDog', { Dogname: dogname, Dogtype: dogtype, DogNameForUpdate: dogname },
          function (returnedData) {
              $('#jqDogGrid').trigger('reloadGrid');
              console.log(returnedData);
@@ -273,7 +274,7 @@
         var dognameforupdate = $("#hdDogNameForUpdate").val();
         dogtype = StripDuplicateDogTypes(dogtype);
 
-            $.post('DogList/EditDog', { DogName: dogname, Dogtype: dogtype, DogNameForUpdate: dognameforupdate },
+            $.post('/DogList/EditDog', { DogName: dogname, Dogtype: dogtype, DogNameForUpdate: dognameforupdate },
             function (returnedData) {
                 $('#jqDogGrid').trigger('reloadGrid');
                 console.log(returnedData);
@@ -289,14 +290,14 @@
         var updatedDogtypes;
 
         //Getting dog so we can check for duplicate dogtypes
-        $.post('DogList/GetDog', { Dogname: dogname },
+        $.post('/DogList/GetDog', { Dogname: dogname },
        function (returnedDog) {
            if(CheckForDuplicatesInArray(returnedDog.Dogtype, dogtype))
            {
                //Alert the user
                alert(dogtype + " is already a type for '" + dogname + "'");
            } else {
-               $.post('DogList/AddDogType', { Dogname: dogname, Dogtype: dogtype },
+               $.post('/DogList/AddDogType', { Dogname: dogname, Dogtype: dogtype },
                 function (returnedData) {
                     $('#jqDogGrid').trigger('reloadGrid');
                     console.log(returnedData);
@@ -319,7 +320,6 @@
     }
 
     function StripDuplicateDogTypes(dogtypes) {
-        debugger;
         var items = dogtypes.split(",");
         var arrlen = items.length - 1;
         var i = 0;
