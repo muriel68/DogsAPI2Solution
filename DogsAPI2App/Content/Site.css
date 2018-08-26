@@ -366,29 +366,35 @@ a.addDog {
  margin-left: 4px;
  margin-right: 4px;
  }
- @media only screen and (max-width:767px) {
- .ui-jqgrid .ui-jqgrid-pager {
- height: 90px;
- }
- .ui-jqgrid .ui-jqgrid-pager>.ui-pager-control {
- height: 85px;
- padding-top: 10px!important;
- }
- .ui-jqgrid .ui-jqgrid-pager>.ui-pager-control>.ui-pg-table>tbody>tr>td {
- vertical-align: top;
- }
- .ui-jqgrid .ui-jqgrid-pager>.ui-pager-control>.ui-pg-table>tbody>tr>td#grid-pager_center {
- width: 0!important;
- position: static;
- }
- .ui-jqgrid .ui-jqgrid-pager>.ui-pager-control>.ui-pg-table>tbody>tr>td#grid-pager_center>.ui-pg-table {
- margin: 36px auto 0;
- position: absolute;
- right: 0;
- left: 0;
- text-align: center;
- }
- .ui-jqgrid .ui-jqgrid-pager .navtable {
- height: auto;
- }
- }.dd
+@media only screen and (max-width:767px) {
+    .ui-jqgrid .ui-jqgrid-pager {
+        height: 90px;
+    }
+
+        .ui-jqgrid .ui-jqgrid-pager > .ui-pager-control {
+            height: 85px;
+            padding-top: 10px !important;
+        }
+
+            .ui-jqgrid .ui-jqgrid-pager > .ui-pager-control > .ui-pg-table > tbody > tr > td {
+                vertical-align: top;
+            }
+
+                .ui-jqgrid .ui-jqgrid-pager > .ui-pager-control > .ui-pg-table > tbody > tr > td#grid-pager_center {
+                    width: 0 !important;
+                    position: static;
+                }
+
+                    .ui-jqgrid .ui-jqgrid-pager > .ui-pager-control > .ui-pg-table > tbody > tr > td#grid-pager_center > .ui-pg-table {
+                        margin: 36px auto 0;
+                        position: absolute;
+                        right: 0;
+                        left: 0;
+                        text-align: center;
+                    }
+
+        .ui-jqgrid .ui-jqgrid-pager .navtable {
+            height: auto;
+        }
+}
+
