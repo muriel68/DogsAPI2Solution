@@ -1,8 +1,6 @@
 ﻿$(document).ready(function () {
 
-
     $(function () {
-        //  debugger;
         $("#jqDogGrid").jqGrid
         ({
             ondblClickRow: function (rowid,iRow,iCol,e) {
@@ -14,20 +12,26 @@
             datatype: 'json',
             mtype: 'Get',
             //table header name  
-            colNames: ['DogNameForUpdate', 'DogName', 'DogType', 'Actions'],
+           // colNames: ['DogNameForUpdate', 'DogName', 'DogType', 'Actions'],
             //colModel takes the data from controller and binds to grid  
             colModel: [
             {
-                name: "DogNameForUpdate", hidden: true, editable: true
+                name: "DogNameForUpdate", hidden: true, editable: true, search: false
             },
             {
-                name: "DogName", editable: true, editrules: { required: true }
+                name: "DogName", editable: true, editrules: { required: true }, label: 'Dog Name', searchoptions: {
+                    // show search options
+            sopt: ["cn"] // ge = greater or equal to, le = less or equal to, eq = equal to
+                }
             },
             {
-                key: false, name: "DogType", index: 'DogType', editable: true, formatter: displayDogTypes, title: false
+                key: false, name: "DogType", index: 'DogType', editable: true, formatter: displayDogTypes, title: false, sortable: false, search: false, label: 'Breed'
             },
-                { key: false, name: 'Actions', index: 'Actions', editable: false, formatter: displayButtons, title: false }
+            {
+                key: false, name: 'Actions', index: 'Actions', editable: false, formatter: displayButtons, title: false, sortable: false, search: false, label: ''
+            }
             ],
+            multipleSearch: true,
             height: '100%',
             rowNum: 10,
             pager: jQuery('#pager'),
@@ -124,7 +128,7 @@
         }
 
         //removing built-in title and replcing with add anchor
-        $(".ui-jqgrid-title").html("<span class='fa fa-plus'><a href='#' class='addDog' style='color:white;'>Add Dog</a></span>");
+        $(".ui-jqgrid-title").html("<span class='fa fa-plus'><a href='#' class='addDog'>Add Dog</a></span>");
 
         //Dialogs
         $('#addDialog').dialog({
@@ -250,21 +254,30 @@
                $("#addDogTypeDialog").dialog("open", "modal", true);
         });
 
-        function SubmitNewDog()
+        function SubmitNewDog(eve)
         {
           var dogtype = $("#taDogTypeAdd").val();
           var dogname = $("#tbDogNameAdd").val();
 
-          dogtype = StripDuplicateDogTypes(dogtype);
-          debugger;
+          if (dogname == "") {
+              eve.preventDefault();
+              $('#tbDogNameAdd')
+              .animate({ borderColor: 'red' }, 400)
+              .delay(400)
+              .animate({ borderColor: 'black' }, 1000);
+              return false;
+          } else {
 
-         $.post('/DogList/CreateDog', { Dogname: dogname, Dogtype: dogtype, DogNameForUpdate: dogname },
-         function (returnedData) {
-             $('#jqDogGrid').trigger('reloadGrid');
-             console.log(returnedData);
-         }).fail(function () {
-             console.log("error");
-         });
+              dogtype = StripDuplicateDogTypes(dogtype);
+
+              $.post('/DogList/CreateDog', { Dogname: dogname, Dogtype: dogtype, DogNameForUpdate: dogname },
+              function (returnedData) {
+                  $('#jqDogGrid').trigger('reloadGrid');
+                  console.log(returnedData);
+              }).fail(function () {
+                  console.log("error");
+              });
+          }
         }
 
         function SubmitEditDog(eve){

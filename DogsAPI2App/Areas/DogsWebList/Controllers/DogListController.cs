@@ -34,7 +34,7 @@ namespace DogsAPI2.Areas.DogsWebList.Controllers
         /// <param name="rows"></param>
         /// <param name="searchString"></param>
         /// <returns></returns>
-        public ActionResult DogDatasource(string sord, int page, int rows, string searchString)
+        public ActionResult DogDatasource(string id, string sidx, string sord, int page, int rows, string searchString, string sopt)
         {
             try { 
             IEnumerable<Dog> Results = _dogService.GetAll();
@@ -63,7 +63,7 @@ namespace DogsAPI2.Areas.DogsWebList.Controllers
             //#6 Setting Search
             if (!string.IsNullOrEmpty(searchString))
             {
-                Results = Results.Where(m => searchString.Contains(m.DogName) || m.Dogtype.Contains(searchString));
+                Results = Results.Where(m => m.DogName.Contains(searchString));
             }
             //#7 Sending Json Object to View.
             var jsonData = new

@@ -1,6 +1,37 @@
-﻿body {
+﻿html,body {
+    /*padding-top: 50px;*/
+    padding-bottom: 20px;
 }
 
+/* Set padding to keep content from hitting the edges */
+.jumbotron {
+    /* padding-top: 48px; */
+    /* padding-bottom: 48px; */
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.footer {
+ position: fixed;
+ bottom: 0;
+ height: 50px;
+ width: 100%;
+ padding-top:10px;
+ 
+ background-color: #F8F9FA;
+}
     .roundContainer {
     border-radius: 5px;
     border: 1px solid;
@@ -10,19 +41,21 @@
     padding-right: inherit;
     }
 
+    
 .navbar-inverse {
-    background-color: #307ecc;
-    border-color: #080808;
+    background-color: #ededed;
+       border-color: #ededed !important;;
 }
 
 .navbar-brand {
     margin-left: -15px;
     color: white;
+ 
 }
 
-.navbar-inverse {
-    background-color: #307ecc;
-    border-color: #080808;
+
+a.addDog {
+  color: #777777;
 }
 
  .ui-jqgrid .ui-jqgrid-view {
@@ -30,6 +63,8 @@
  }
  .ui-jqgrid .ui-jqgrid-view, .ui-jqgrid .ui-paging-info, .ui-jqgrid .ui-pg-selbox, .ui-jqgrid .ui-pg-table {
  font-size: 13px;
+ box-shadow:none;
+ border-color:black;
  }
  .ui-jqgrid .ui-jqgrid-title {
  float: left;
@@ -42,8 +77,7 @@
  .ui-jqgrid-view>.ui-jqgrid-titlebar {
  height: 40px;
  line-height: 24px;
- color: #FFF;
- background: #307ECC;
+ background: #ededed;
  padding: 0;
  font-size: 15px;
  }

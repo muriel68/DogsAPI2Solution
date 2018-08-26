@@ -238,6 +238,7 @@
     <Content Include="fonts\FontAwesome.otf" />
     <Content Include="Areas\DogsWebList\Views\DogList\Index.cshtml" />
     <Content Include="Models\dogs.json" />
+    <None Include="Properties\PublishProfiles\FTP.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\i18n\grid.locale-ar.js" />
     <Content Include="Scripts\i18n\grid.locale-bg.js" />
